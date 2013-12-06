@@ -1,15 +1,8 @@
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-
-pids
-logs
-results
+.idea/workspace.xml
+.coverage
 
 npm-debug.log
 node_modules
+
+*.min.js
+Gruntfile.js
