@@ -8,6 +8,9 @@
     "type": "git",
     "url": "git@github.com:sergeyt/fogbus.io.git"
   },
+  "engines": {
+    "node": "0.10.x"
+  },
   "keywords": [
     "fogbugz",
     "events",
