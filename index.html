@@ -1,0 +1,56 @@
+<html>
+<head>
+	<style>
+		.terminal {
+			font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+			font-size: 14pt;
+			color: #f0f0f0;
+			background: #000;
+		}
+	</style>
+	<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+	<script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+	<script src="js/term.js"></script>
+	<script src="js/sprintf.js"></script>
+	<script src="js/termlog.js"></script>
+	<script>
+		$(function() {
+
+			console.terminal();
+			console.log('logging fogbus events');
+
+			var sockjs = new SockJS('/fogbus');
+			sockjs.onopen = function() {
+				print('[*] open ' + sockjs.protocol);
+			};
+			sockjs.onmessage = function(e) {
+				print('message:\r\n', e.data);
+			};
+			sockjs.onclose = function() {
+				print('[*] close');
+			};
+
+			var nextColor = 0;
+			var colors = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
+
+			function colorize(msg){
+				var c = colors[nextColor];
+				nextColor++;
+				if (nextColor > colors.length) {
+					nextColor = 0;
+				}
+				return '\x1b[' + c + 'm' + msg + '\x1b[m';
+			}
+
+			function print(prefix, d) {
+				var s = d ? JSON.stringify(JSON.parse(d), null, 2) : '';
+				if (s) s = s.replace(/\n/g, '\r\n');
+				console.log(colorize(prefix + s));
+			}
+
+		});
+	</script>
+</head>
+<body>
+</body>
+</html>
