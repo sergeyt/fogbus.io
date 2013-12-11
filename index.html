@@ -43,9 +43,27 @@
 			}
 
 			function print(prefix, d) {
-				var s = d ? JSON.stringify(JSON.parse(d), null, 2) : '';
+				var s = format(d);
 				if (s) s = s.replace(/\n/g, '\r\n');
 				console.log(colorize(prefix + s));
+			}
+
+			function format(d){
+				if (!d) return '';
+				try {
+					var m = JSON.parse(d);
+					if (m.body && Object.keys(m.body).length == 0){
+						delete m.body;
+					}
+					if (Object.keys(m).length == 2){
+						if (m.id && m.endpoint){
+							return m.endpoint + '/case/' + m.id;
+						}
+					}
+					return JSON.stringify(m, null, 2);
+				} catch (err) {
+					return d;
+				}
 			}
 
 		});
