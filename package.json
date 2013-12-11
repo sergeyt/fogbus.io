@@ -34,7 +34,8 @@
     "grunt-bump": "~0.0.7",
     "grunt-auto-release": "~0.0.2",
     "grunt-coffeelint": "0.0.7",
-    "grunt-cli": "~0.1.11"
+    "grunt-cli": "~0.1.11",
+    "request": "~2.29.0"
   },
   "scripts": {
     "test": "grunt test",

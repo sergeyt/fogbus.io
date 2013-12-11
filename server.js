@@ -75,8 +75,11 @@ app.get('/', function(req, res) {
 
 app.get('/fogbugz/events/:case', function(req, res) {
 	var id = (/case(\d+)/gi).exec(req.params.case)[1];
-  var port = req.app.settings.port || 80;
-	var endpoint = req.protocol + '://' + req.host + (port == 80 || port == 443 ? '' : ':' + port);
+	var endpoint = req.protocol + '://' + req.get('host');
+
+	//console.log('headers:\n' + JSON.stringify(req.headers, null, 2));
+	//console.log('endpoint:', endpoint);
+
 	broadcast({
 		id: id,
 		endpoint: endpoint,
