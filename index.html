@@ -52,14 +52,6 @@
 				if (!d) return '';
 				try {
 					var m = JSON.parse(d);
-					if (m.body && Object.keys(m.body).length == 0){
-						delete m.body;
-					}
-					if (Object.keys(m).length == 2){
-						if (m.id && m.endpoint){
-							return m.endpoint + '/case/' + m.id;
-						}
-					}
 					return JSON.stringify(m, null, 2);
 				} catch (err) {
 					return d;
