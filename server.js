@@ -20,7 +20,7 @@ socksvr.on('connection', function(conn) {
 	});
 });
 
-function broadcast(m){
+function broadcast(m) {
 	console.log('bus> broadcast message:', m);
 	var s = JSON.stringify(m);
 	for (var id in bus) {
@@ -79,6 +79,14 @@ app.get('/fogbugz/events/:case', function(req, res) {
 
 	//console.log('headers:\n' + JSON.stringify(req.headers, null, 2));
 	//console.log('endpoint:', endpoint);
+
+	// temporary for testing purposes
+	broadcast({request: {
+		url: req.url,
+		ip: req.ip,
+		ips: req.ips,
+		headers: req.headers
+	}});
 
 	broadcast({
 		id: id,
