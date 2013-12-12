@@ -93,7 +93,7 @@ app.get('/fogbugz/events/:case', function(req, res) {
 
 	if (ip){
 		dns.reverse(ip, function(err, domains){
-			msg.domains = domains;
+			if (domains) msg.domains = domains;
 			broadcast(msg);
 			res.send('ok');
 		});
