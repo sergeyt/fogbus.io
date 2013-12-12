@@ -75,24 +75,20 @@ app.get('/', function(req, res) {
 
 app.get('/fogbugz/events/:case', function(req, res) {
 	var id = (/case(\d+)/gi).exec(req.params.case)[1];
-	var endpoint = req.protocol + '://' + req.get('host');
 
-	//console.log('headers:\n' + JSON.stringify(req.headers, null, 2));
-	//console.log('endpoint:', endpoint);
-
-	// temporary for testing purposes
-	broadcast({request: {
+	var reqInfo = {
 		url: req.url,
 		ip: req.ip,
 		ips: req.ips,
 		headers: req.headers
-	}});
+	};
 
 	broadcast({
 		id: id,
-		endpoint: endpoint,
+		request: reqInfo,
 		body: req.body
 	});
+
 	res.send('ok');
 });
 
