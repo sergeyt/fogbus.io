@@ -1,6 +1,7 @@
 var express = require('express'),
 		sockjs = require('sockjs'),
-		http = require('http');
+		http = require('http'),
+		dns = require('dns');
 
 // sockjs server
 var sockjs_opts = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.3.min.js"};
@@ -75,7 +76,6 @@ app.get('/', function(req, res) {
 
 app.get('/fogbugz/events/:case', function(req, res) {
 	var id = (/case(\d+)/gi).exec(req.params.case)[1];
-
 	var reqInfo = {
 		url: req.url,
 		ip: req.ip,
@@ -83,13 +83,25 @@ app.get('/fogbugz/events/:case', function(req, res) {
 		headers: req.headers
 	};
 
-	broadcast({
+	var msg = {
 		id: id,
 		request: reqInfo,
 		body: req.body
-	});
+	};
 
-	res.send('ok');
+	var ip = req.ip;
+
+	if (ip){
+		dns.reverse(ip, function(err, domains){
+			msg.domains = domains;
+			broadcast(msg);
+			res.send('ok');
+		});
+	} else {
+		broadcast(msg);
+		res.send('ok');
+	}
+
 });
 
 // error handler
