@@ -111,7 +111,7 @@ function milestoneEventHandler(req, res){
 	eventHandler(req, res, 'milestone');
 }
 
-app.get(/\/(index.html)?/, function(req, res) {
+app.get('/', function(req, res) {
 	res.sendfile(__dirname + '/index.html');
 });
 app.get('/fogbugz/events/:case', caseEventHandler); // TODO remove
