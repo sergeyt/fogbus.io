@@ -81,7 +81,8 @@ function requestInfo(req){
 
 function eventHandler(req, res, type){
 	var id;
-	var from = req.query ? req.query.from : '';
+	var from = req.query.from || '';
+	var event = req.query.event || type;
 
 	if (req.params.case){
 		id = (/case(\d+)/gi).exec(req.params.case)[1];
@@ -90,7 +91,7 @@ function eventHandler(req, res, type){
 	}
 
 	var msg = {
-		event: type,
+		event: event,
 		from: from,
 		id: id,
 		request: requestInfo(req),
