@@ -1,18 +1,17 @@
 var express = require('express'),
 		sockjs = require('sockjs'),
-		http = require('http'),
-		dns = require('dns');
+		http = require('http');
 
 // sockjs server
 var sockjs_opts = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.3.min.js"};
 
-var bus = {};
-var socksvr = sockjs.createServer(sockjs_opts);
-socksvr.on('connection', function(conn) {
-	bus[conn.id] = conn;
+var sock_connections = {};
+var sock = sockjs.createServer(sockjs_opts);
+sock.on('connection', function(conn) {
+	sock_connections[conn.id] = conn;
 
 	conn.on('close', function() {
-		delete bus[conn.id];
+		delete sock_connections[conn.id];
 		console.log('bus> close ' + conn);
 	});
 
@@ -21,11 +20,12 @@ socksvr.on('connection', function(conn) {
 	});
 });
 
+// sends given message to all active sockjs connections
 function broadcast(m) {
 	console.log('bus> broadcast message:', m);
 	var s = JSON.stringify(m);
-	for (var id in bus) {
-		bus[id].write(s);
+	for (var id in sock_connections) {
+		sock_connections[id].write(s);
 	}
 }
 
@@ -33,7 +33,7 @@ function broadcast(m) {
 var app = express();
 var server = http.createServer(app);
 
-socksvr.installHandlers(server, {prefix: '/fogbus'});
+sock.installHandlers(server, {prefix: '/fogbus'});
 
 // configure express
 app.set('port', process.env.PORT || 80);
@@ -70,39 +70,53 @@ app.configure(function() {
 	}
 });
 
-app.get('/', function(req, res) {
-	res.sendfile(__dirname + '/index.html');
-});
-
-app.get('/fogbugz/events/:case', function(req, res) {
-	var id = (/case(\d+)/gi).exec(req.params.case)[1];
-	var reqInfo = {
+function requestInfo(req){
+	return {
 		url: req.url,
 		ip: req.ip,
 		ips: req.ips,
 		headers: req.headers
 	};
+}
+
+function eventHandler(req, res, type){
+	var id;
+	var from = req.query ? req.query.from : '';
+
+	if (req.params.case){
+		id = (/case(\d+)/gi).exec(req.params.case)[1];
+	} else {
+		id = req.params.id;
+	}
 
 	var msg = {
+		event: type,
+		from: from,
 		id: id,
-		request: reqInfo,
+		request: requestInfo(req),
 		body: req.body
 	};
 
-	var ip = req.ip;
+	broadcast(msg);
+	res.send('ok');
+}
 
-	if (ip){
-		dns.reverse(ip, function(err, domains){
-			if (domains) msg.domains = domains;
-			broadcast(msg);
-			res.send('ok');
-		});
-	} else {
-		broadcast(msg);
-		res.send('ok');
-	}
+function caseEventHandler(req, res){
+	eventHandler(req, res, 'case');
+}
 
+function milestoneEventHandler(req, res){
+	eventHandler(req, res, 'milestone');
+}
+
+app.get(/\/(index.html)?/, function(req, res) {
+	res.sendfile(__dirname + '/index.html');
 });
+app.get('/fogbugz/events/:case', caseEventHandler); // TODO remove
+app.get('case/:id', caseEventHandler);
+app.post('case/:id', caseEventHandler);
+app.get('milestone/:id', milestoneEventHandler);
+app.post('milestone/:id', milestoneEventHandler);
 
 // error handler
 app.use(function(req, res, next) {
