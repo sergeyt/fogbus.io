@@ -114,9 +114,9 @@ function milestoneEventHandler(req, res){
 app.get(/\/(index.html)?/, function(req, res) {
 	res.sendfile(__dirname + '/index.html');
 });
-app.get('/fogbugz/events/:case?*', caseEventHandler); // TODO remove
-app.get('/case/:id?*', caseEventHandler);
-app.get('/milestone/:id?*', milestoneEventHandler);
+app.get('/fogbugz/events/:case', caseEventHandler); // TODO remove
+app.get('/case/:id', caseEventHandler);
+app.get('/milestone/:id', milestoneEventHandler);
 
 // error handler
 app.use(function(req, res, next) {
