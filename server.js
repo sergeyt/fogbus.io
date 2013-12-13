@@ -97,6 +97,8 @@ function eventHandler(req, res, type){
 		body: req.body
 	};
 
+	console.log('[fogbus] %s event about %s from %s', type, id, from);
+
 	broadcast(msg);
 	res.send('ok');
 }
