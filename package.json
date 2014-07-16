@@ -21,7 +21,7 @@
     "Sergey Todyshev <stodyshev@gmail.com>"
   ],
   "dependencies": {
-    "express": "~4.4",
+    "express": "~4.6",
     "sockjs": "~0.3.8",
     "sprintf-js": "0.0.7",
     "term.js": "0.0.3",
